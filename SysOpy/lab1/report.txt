@@ -1,0 +1,33 @@
+
+1. Lista rzeczy ktore dzialaja:
+
+	Zadanie 1:
+		Dziala wszystko wraz ze zwalnianiem pamieci. Biblioteki kompiluja sie bez warningow. Biblioteka oparta jest na vetorze przechowujacym int*. Poszczegolne bloki alokuje funkcja calloc. Podczas usuwania obiektu zwalniane sa wszystkie bloki.
+		Jesli do kompilacji uzyje sie przygotowanego makefile'a, to funkcja od razu kopiuje biblioteke do folderu /usr/lib/, aby mozna bylo z niej korzystac. Po wywolaniu make clean skrypt usuwa biblioteke z podanego folderu
+	Zadanie 2:
+		Dzialaja wersje programu na bibliotece linkowanej statycznie i na wspoldzielonej. Wersji ladowanej dynamicznie nie udalo mi sie zaimplementowac z powodu wytlumaczonego nizej.
+		Program udostepnia interfejs typu REPL do sterowania obiektem. Po wykonaniu kazdej z operacji program wypisuje czas wykorzystany do wykonania operacji.
+		Do kompilacji mozna uzyc make'a, programy kompiluja sie bez warningow.
+		Wersji dynamicznej nie udalo mi sie z powodu name manglingu w jezyku c++. Nie bylby to nawet problem, gdyby nie to, ze funkcje te byly czlonkami obiektu. Nie wiem jak uzyskac taka funkcje i na pewno zapytam o to na zajeciach. Probowalem uzyc factory, ktore przekazuje glownemu programowi mape ze wskaznikami na funkcje, ale nie moglem ich zastosowach na konkretnych obiektach. Pozostalosci po mych zmaganiach zostawilem w pliku main_dl.cpp i fileInfo.cpp w komentarzach.
+	Zadanie 3a:
+		Testy uruchamiaja sie i korzystajac z pliku testCommands.txt testuja program zgodnie z zadaniem. Output nastepnie przekierowuja do plikow.
+	Zadanie 3b:
+		Rozszerzylem makefile o zmienna OFLAGS, ktora mozna ustawiac flage optymalizacji.
+		Przeprowadzilem testy dla czterech flag: -O0 -O3 -Ofast i -Os. Z moich testow wnioskuje, ze biblioteka wspoldzielona w niektorych przypadkach jest wolniejsza od statycznej. Po zwiekszeniu optymalizacji roznica ta bardzo sie zmniejsza i wydaje mi sie, ze najwieksze opoznienia wynikaja tu z czekania na odpowiedzi systemu. 
+		Wszystkie raporty znajduja sie w folderze ./results/
+
+2. Makefile
+
+	Zmienne:
+		CC - zmienna przechowujaca informacje o wykorzystywanym kompilatorze
+		CFLAGS - okresla flagi uzyte podczas kompilacji
+		OFLAGS - okresla poziom optymalizacji podczas kompilacji
+	
+	Targety:
+		all - kompiluje obie wersje programu wraz z bibliotekami
+		programStaticLibrary, programSharedLibrary - kompiluje programy osobno wraz z bibliotekami
+		staticLibrary, sharedLibrary - Kompiluje biblioteki. Wersja wspoldzielona kopiuje od razu biblioteke do /usr/lib/, aby mozna z niej bylo korzystac
+		clean - usuwa wszelkie pozostalosci po kompilacji
+		cleanStaticProgram, cleanSharedProgram, cleanStatic, cleanShared - czysci folder po poszczegolnych rzeczach
+		test - kompiluje programy i je testuje. Resultaty zapisuje w folderze ./results/
+		testStaticLib, testSharedLib - testuje biblioteki z osobna

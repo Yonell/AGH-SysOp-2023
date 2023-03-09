@@ -1,0 +1,129 @@
+Initializing the fileStats...
+fileStats initilized!
+Operation duration:
+Real: 1960ns
+User: 1940ns
+Real: 1950ns
+
+Adding file fileInfo.cpp to the fileStats...
+Done
+Operation duration:
+Real: 1623711ns
+User: 1623721ns
+Real: 1623721ns
+
+Adding file fileInfo.h to the fileStats...
+Done
+Operation duration:
+Real: 1451833ns
+User: 1451853ns
+Real: 1451853ns
+
+Adding file main.cpp to the fileStats...
+Done
+Operation duration:
+Real: 1248033ns
+User: 1248043ns
+Real: 1248033ns
+
+Adding file main_dl.cpp to the fileStats...
+Done
+Operation duration:
+Real: 1269344ns
+User: 1269354ns
+Real: 1269354ns
+
+Adding file makefile to the fileStats...
+Done
+Operation duration:
+Real: 1312743ns
+User: 1312743ns
+Real: 1312733ns
+
+Showing fileStats on index 0...
+Lines: 116
+Words: 263
+Characters: 2400
+Operation duration:
+Real: 680ns
+User: 650ns
+Real: 660ns
+
+Showing fileStats on index 1...
+Lines: 24
+Words: 48
+Characters: 425
+Operation duration:
+Real: 250ns
+User: 240ns
+Real: 240ns
+
+Showing fileStats on index 2...
+Lines: 151
+Words: 613
+Characters: 5938
+Operation duration:
+Real: 220ns
+User: 210ns
+Real: 220ns
+
+Showing fileStats on index 3...
+Lines: 167
+Words: 679
+Characters: 6707
+Operation duration:
+Real: 190ns
+User: 190ns
+Real: 190ns
+
+Showing fileStats on index 4...
+Lines: 82
+Words: 200
+Characters: 2204
+Operation duration:
+Real: 190ns
+User: 180ns
+Real: 180ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 4530ns
+User: 4540ns
+Real: 4530ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 350ns
+User: 340ns
+Real: 350ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 220ns
+User: 220ns
+Real: 210ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 200ns
+User: 200ns
+Real: 200ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 190ns
+User: 190ns
+Real: 180ns
+
+Destroying the fileStats object... 
+Done
+Operation duration:
+Real: 1760ns
+User: 1760ns
+Real: 1760ns
+

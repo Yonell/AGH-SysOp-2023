@@ -1,0 +1,129 @@
+Initializing the fileStats...
+fileStats initilized!
+Operation duration:
+Real: 3560ns
+User: 3510ns
+Real: 3510ns
+
+Adding file fileInfo.cpp to the fileStats...
+Done
+Operation duration:
+Real: 1866960ns
+User: 1866970ns
+Real: 1866960ns
+
+Adding file fileInfo.h to the fileStats...
+Done
+Operation duration:
+Real: 1199634ns
+User: 1199644ns
+Real: 1199644ns
+
+Adding file main.cpp to the fileStats...
+Done
+Operation duration:
+Real: 1145455ns
+User: 1145445ns
+Real: 1145435ns
+
+Adding file main_dl.cpp to the fileStats...
+Done
+Operation duration:
+Real: 1527632ns
+User: 1527632ns
+Real: 1527632ns
+
+Adding file makefile to the fileStats...
+Done
+Operation duration:
+Real: 1131075ns
+User: 1131075ns
+Real: 1131075ns
+
+Showing fileStats on index 0...
+Lines: 116
+Words: 263
+Characters: 2400
+Operation duration:
+Real: 630ns
+User: 630ns
+Real: 620ns
+
+Showing fileStats on index 1...
+Lines: 24
+Words: 48
+Characters: 425
+Operation duration:
+Real: 240ns
+User: 240ns
+Real: 240ns
+
+Showing fileStats on index 2...
+Lines: 151
+Words: 613
+Characters: 5938
+Operation duration:
+Real: 220ns
+User: 220ns
+Real: 220ns
+
+Showing fileStats on index 3...
+Lines: 167
+Words: 679
+Characters: 6707
+Operation duration:
+Real: 200ns
+User: 210ns
+Real: 200ns
+
+Showing fileStats on index 4...
+Lines: 84
+Words: 203
+Characters: 2260
+Operation duration:
+Real: 210ns
+User: 210ns
+Real: 210ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 4690ns
+User: 4690ns
+Real: 4690ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 340ns
+User: 340ns
+Real: 340ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 190ns
+User: 190ns
+Real: 190ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 220ns
+User: 220ns
+Real: 220ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 220ns
+User: 210ns
+Real: 210ns
+
+Destroying the fileStats object... 
+Done
+Operation duration:
+Real: 1770ns
+User: 1760ns
+Real: 1770ns
+

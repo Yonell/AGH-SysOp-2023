@@ -1,0 +1,18 @@
+init 32
+count fileInfo.cpp
+count fileInfo.h
+count main.cpp
+count main_dl.cpp
+count makefile
+show 0
+show 1
+show 2
+show 3
+show 4
+delete index 0
+delete index 0
+delete index 0
+delete index 0
+delete index 0
+destroy
+exit

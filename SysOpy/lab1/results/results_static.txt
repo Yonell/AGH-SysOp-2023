@@ -1,0 +1,129 @@
+Initializing the fileStats...
+fileStats initilized!
+Operation duration:
+Real: 840ns
+User: 800ns
+Real: 800ns
+
+Adding file fileInfo.cpp to the fileStats...
+Done
+Operation duration:
+Real: 1789111ns
+User: 1789111ns
+Real: 1789101ns
+
+Adding file fileInfo.h to the fileStats...
+Done
+Operation duration:
+Real: 1209470ns
+User: 1209470ns
+Real: 1209470ns
+
+Adding file main.cpp to the fileStats...
+Done
+Operation duration:
+Real: 1161041ns
+User: 1161051ns
+Real: 1161051ns
+
+Adding file main_dl.cpp to the fileStats...
+Done
+Operation duration:
+Real: 1276140ns
+User: 1276160ns
+Real: 1276150ns
+
+Adding file makefile to the fileStats...
+Done
+Operation duration:
+Real: 1145501ns
+User: 1145491ns
+Real: 1145491ns
+
+Showing fileStats on index 0...
+Lines: 116
+Words: 263
+Characters: 2400
+Operation duration:
+Real: 480ns
+User: 480ns
+Real: 480ns
+
+Showing fileStats on index 1...
+Lines: 24
+Words: 48
+Characters: 425
+Operation duration:
+Real: 250ns
+User: 260ns
+Real: 250ns
+
+Showing fileStats on index 2...
+Lines: 151
+Words: 613
+Characters: 5938
+Operation duration:
+Real: 220ns
+User: 220ns
+Real: 220ns
+
+Showing fileStats on index 3...
+Lines: 167
+Words: 679
+Characters: 6707
+Operation duration:
+Real: 200ns
+User: 200ns
+Real: 200ns
+
+Showing fileStats on index 4...
+Lines: 81
+Words: 190
+Characters: 2111
+Operation duration:
+Real: 180ns
+User: 190ns
+Real: 180ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 360ns
+User: 360ns
+Real: 360ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 160ns
+User: 170ns
+Real: 160ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 160ns
+User: 160ns
+Real: 160ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 180ns
+User: 190ns
+Real: 180ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 140ns
+User: 140ns
+Real: 140ns
+
+Destroying the fileStats object... 
+Done
+Operation duration:
+Real: 170ns
+User: 160ns
+Real: 170ns
+

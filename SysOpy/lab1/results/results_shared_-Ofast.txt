@@ -1,0 +1,129 @@
+Initializing the fileStats...
+fileStats initilized!
+Operation duration:
+Real: 480ns
+User: 450ns
+Real: 460ns
+
+Adding file fileInfo.cpp to the fileStats...
+Done
+Operation duration:
+Real: 1449179ns
+User: 1449179ns
+Real: 1449169ns
+
+Adding file fileInfo.h to the fileStats...
+Done
+Operation duration:
+Real: 1291472ns
+User: 1291492ns
+Real: 1291492ns
+
+Adding file main.cpp to the fileStats...
+Done
+Operation duration:
+Real: 1430179ns
+User: 1430179ns
+Real: 1430179ns
+
+Adding file main_dl.cpp to the fileStats...
+Done
+Operation duration:
+Real: 1164445ns
+User: 1164454ns
+Real: 1164454ns
+
+Adding file makefile to the fileStats...
+Done
+Operation duration:
+Real: 1127226ns
+User: 1127246ns
+Real: 1127246ns
+
+Showing fileStats on index 0...
+Lines: 119
+Words: 297
+Characters: 2614
+Operation duration:
+Real: 840ns
+User: 840ns
+Real: 840ns
+
+Showing fileStats on index 1...
+Lines: 24
+Words: 48
+Characters: 425
+Operation duration:
+Real: 210ns
+User: 210ns
+Real: 210ns
+
+Showing fileStats on index 2...
+Lines: 153
+Words: 619
+Characters: 5984
+Operation duration:
+Real: 210ns
+User: 210ns
+Real: 210ns
+
+Showing fileStats on index 3...
+Lines: 167
+Words: 679
+Characters: 6707
+Operation duration:
+Real: 160ns
+User: 170ns
+Real: 160ns
+
+Showing fileStats on index 4...
+Lines: 84
+Words: 203
+Characters: 2263
+Operation duration:
+Real: 180ns
+User: 170ns
+Real: 180ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 610ns
+User: 610ns
+Real: 610ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 70ns
+User: 80ns
+Real: 70ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 70ns
+User: 60ns
+Real: 70ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 60ns
+User: 70ns
+Real: 60ns
+
+Deleting fileStats on index 0...
+Done
+Operation duration:
+Real: 60ns
+User: 70ns
+Real: 60ns
+
+Destroying the fileStats object... 
+Done
+Operation duration:
+Real: 160ns
+User: 170ns
+Real: 160ns
+
