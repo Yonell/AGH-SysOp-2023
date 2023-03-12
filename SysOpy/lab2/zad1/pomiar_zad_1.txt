@@ -1,0 +1,4 @@
+Wykonanie funkcja c:
+95400ns
+Wykonanie funkcja systemowa:
+2990821ns

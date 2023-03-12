@@ -1,0 +1,4 @@
+Wykonanie odwracania po jednym znaku:
+89800ns
+Wykonanie odwracania blokami:
+4270ns
