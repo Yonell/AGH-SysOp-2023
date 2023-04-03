@@ -1,0 +1,16 @@
+Time elapsed on calculations (ms):
+
+Number of programs	1		10		50		100		1000
+Rectangle width
+0.1					1		6		25		49		582
+0.01				1		7		29		55		597
+0.001				1		6		26		49		570
+0.0001				1		5		28		50		666
+0.00001				1		6		30		60		625
+0.0000001			54		29		49		96		607
+0.000000001			5197	2414	2449	2405	2935
+0.0000000001		51438	23900	24448	25107	25808
+0.00000000001		inf		inf		inf		inf		inf
+0.000000000001		inf		inf		inf		inf		inf
+
+inf means it didnt calculate it in a reasonable time.
