@@ -17,6 +17,9 @@ struct client {
     int id;
     int queue_id;
 };
+std::map<int, client> clients;
+int in_queue_id;
+std::ofstream log_file;
 
 std::string return_current_time_and_date()
 {
@@ -36,14 +39,11 @@ std::vector<int> get_keys(const std::map<int, client>& clients){
     }
     return result;
 }
-std::map<int, client> clients;
-int in_queue_id;
-std::ofstream log_file;
 
 void sigint_handler(int sig){
     std::cout << "SERVER: " << return_current_time_and_date() << " SIGINT signal received! Exiting...\n";
     log_file << "SERVER: " << return_current_time_and_date() << " SIGINT signal received! Exiting...\n";
-    for(int i=0; i<clients.size(); i++){
+    for(long unsigned int i=0; i<clients.size(); i++){
         struct my_msgbuf_stop_to_client buf{MSG_STOP, MSG_STOP};
         msgsnd(clients[i].queue_id, &buf, 0, MSG_NOERROR | IPC_NOWAIT);
     }
@@ -102,7 +102,7 @@ void check_for_list(){
         std::cout << "SERVER: " << return_current_time_and_date() << " Sending a list of connected clients to client " << client_id << "!" << "\n";
         log_file << "SERVER: " << return_current_time_and_date() << " Sending a list of connected clients to client " << client_id << "!" << "\n";
         int* keys_array = new int[keys.size()];
-        for(int i=0; i<keys.size(); i++){
+        for(long unsigned int i=0; i<keys.size(); i++){
             keys_array[i] = keys[i];
         }
         struct my_msgbuf_list_to_client buf2;
@@ -135,14 +135,14 @@ void check_for_2one(){
             read_chars = msgrcv(in_queue_id, &buf, COMM_MAX_LENGTH, MSG_2ONE, MSG_NOERROR | IPC_NOWAIT);
             continue;
         }
-        struct my_msgbuf_2one_to_client *buf2 = (my_msgbuf_2one_to_client *) malloc(sizeof(my_msgbuf_2one_to_client));
-        buf2->mtype = MSG_2ONE;
-        buf2->type = MSG_2ONE;
-        buf2->size = buf.size;
-        buf2->source_id = buf.source_id;
-        buf2->destination_id = buf.destination_id;
-        strcpy(buf2->message, buf.message);
-        msgsnd(clients[buf.destination_id].queue_id, buf2, sizeof(int) * 4 + COMM_MAX_LENGTH, 0);
+        struct my_msgbuf_2one_to_client buf2;
+        buf2.mtype = MSG_2ONE;
+        buf2.type = MSG_2ONE;
+        buf2.size = buf.size;
+        buf2.source_id = buf.source_id;
+        buf2.destination_id = buf.destination_id;
+        strcpy(buf2.message, buf.message);
+        msgsnd(clients[buf.destination_id].queue_id, &buf2, sizeof(int) * 4 + COMM_MAX_LENGTH, 0);
         read_chars = msgrcv(in_queue_id, &buf, COMM_MAX_LENGTH, MSG_2ONE, MSG_NOERROR | IPC_NOWAIT);
     }
 }
@@ -162,7 +162,7 @@ void check_for_2all(){
             continue;
         }
         std::vector<int> keys = get_keys(clients);
-        for(int i=0; i<keys.size(); i++){
+        for(long unsigned int i=0; i<keys.size(); i++){
             struct my_msgbuf_2all_to_client *buf2 = (my_msgbuf_2all_to_client*) malloc(sizeof(my_msgbuf_2all_to_client));
             buf2->mtype = MSG_2ALL;
             buf2->type = MSG_2ALL;
@@ -182,7 +182,6 @@ int main(){
     struct sigaction sigaction1;
     sigaction1.sa_handler = sigint_handler;
     sigaction(SIGINT, &sigaction1, nullptr);
-    msgctl(0, IPC_RMID, nullptr);
     in_queue_id = msgget(ftok(homedir, proj_id), IPC_CREAT | IPC_EXCL | 0777 | IPC_RMID);
     if(in_queue_id == -1){
         std::cout << "SERVER: " << return_current_time_and_date() << " ERROR Failed to create a queue!" << "\n";
