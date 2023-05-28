@@ -83,7 +83,7 @@ void send_2one_message(){
     std::string string_buffer;
     std::cin.ignore(2, '\n');
     std::getline(std::cin, string_buffer);
-    memcpy(buf.message, string_buffer.c_str(), string_buffer.size()+1);
+    strcpy(buf.message, string_buffer.c_str());
     buf.message[string_buffer.size()] = 0;
     buf.size = strlen(buf.message);
     send(socket_fd, (char*)&buf, sizeof(buf), 0);
@@ -97,7 +97,7 @@ void send_2all_message(){
     std::string string_buffer;
     std::cin.ignore(2, '\n');
     std::getline(std::cin, string_buffer);
-    memcpy(buf.message, string_buffer.c_str(), string_buffer.size()+1);
+    strcpy(buf.message, string_buffer.c_str());
     buf.message[string_buffer.size()] = 0;
     buf.size = strlen(buf.message);
     send(socket_fd, (char*)&buf, sizeof(buf), 0);
@@ -108,16 +108,18 @@ void read_queue() {
     unsigned int* type = new unsigned int;
     timespec* timeout = new timespec;
     timeout->tv_sec = 0;
-    while(recv(socket_fd, (char*)&buf, 20000, 0) > 0) {
+    while(recv(socket_fd, (char*)&buf, 20000, MSG_DONTWAIT) > 0) {
         *type = buf.type;
         switch (*type) {
             case MSG_2ONE: {
-                std::cout << "CLIENT: Message received from " << buf.source_id << ": " << buf.message << "\n";
+                std::string message(buf.message);
+                std::cout << "CLIENT: Message received from " << buf.source_id << ": " << message << "\n";
                 break;
             }
             case MSG_2ALL: {
                 my_msgbuf_2all_to_client buf2 = *(my_msgbuf_2all_to_client *) &buf;
-                std::cout << "CLIENT: Message received from " << buf2.source_id << ": " << buf2.message << "\n";
+                std::string message(buf2.message);
+                std::cout << "CLIENT: Message received from " << buf2.source_id << ": " << message << "\n";
                 break;
             }
             case MSG_LIST: {

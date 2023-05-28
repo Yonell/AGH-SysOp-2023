@@ -72,7 +72,9 @@ void listening_thread_function(){
 
     struct my_msgbuf_2one_to_server buf;
     while(1){
-        int nfds = epoll_wait(epollfd, events, 64, -1);
+        int nfds = epoll_wait(epollfd, events, 4, -1);
+        std::cout << "SERVER: epoll returned " << nfds << ". \n";
+
         if (nfds == -1) {
             std::cout << "SERVER: " << return_current_time_and_date() << " Error while waiting for events\n";
             exit(1);
@@ -81,19 +83,13 @@ void listening_thread_function(){
             if(events[i].data.fd == local_socket_fd || events[i].data.fd == inet4_socket_fd){
                 std::cout << "SERVER: " << return_current_time_and_date() << " New connection on socket " << events[i].data.fd << "\n";
                 int client_socket_fd = accept(events[i].data.fd, nullptr, nullptr);
+                recv(client_socket_fd, (char *)(&buf), sizeof(buf), 0);
                 if(client_socket_fd == -1){
                     std::cout << "SERVER: " << return_current_time_and_date() << " Error while accepting new connection\n";
                     std::cout << "SERVER: Reason: " << strerror(errno) << "\n";
                     exit(1);
                 }
-                std::cout << "SERVER: " << return_current_time_and_date() << " Client accepted\n";
-                event.events = EPOLLIN;
-                event.data.fd = client_socket_fd;
-                if(epoll_ctl(epollfd, EPOLL_CTL_ADD, client_socket_fd, &event) == -1){
-                    std::cout << "SERVER: " << return_current_time_and_date() << " Error while adding client socket to epoll\n";
-                    exit(1);
-                }
-                std::cout << "SERVER: " << return_current_time_and_date() << " Client socket added to epoll\n";
+                std::cout << "SERVER: " << return_current_time_and_date() << " Client accepted. Client socket: " << client_socket_fd << "\n";
                 int client_id;
                 std::vector<int> keys = get_keys(clients);
                 if (keys.size() == 0)
@@ -106,16 +102,22 @@ void listening_thread_function(){
                 struct my_msgbuf_init_to_client* buf3 = new my_msgbuf_init_to_client{MSG_INIT, client_id};
                 send(client_socket_fd, (char *)(buf3), sizeof(buf3), 0);
                 std::cout << "SERVER: " << return_current_time_and_date() << " MSG_INIT sent to client\n";
+                event.events = EPOLLIN;
+                event.data.fd = client_socket_fd;
+                if(epoll_ctl(epollfd, EPOLL_CTL_ADD, client_socket_fd, &event) == -1){
+                    std::cout << "SERVER: " << return_current_time_and_date() << " Error while adding client socket to epoll\n";
+                    exit(1);
+                }
+                std::cout << "SERVER: " << return_current_time_and_date() << " Client socket added to epoll\n";
             }
             else{
-                std::cout << "LOL";
-                buf = *((my_msgbuf_2one_to_server*)events[i].data.ptr);
+                recv(events[i].data.fd, (char *)(&buf), sizeof(buf), 0);
                 unsigned int type = buf.type;
                 switch(type) {
                     case MSG_STOP: {
                         my_msgbuf_stop_to_server buf3 = *((my_msgbuf_stop_to_server*) &buf);
-                        shutdown(buf3.data, SHUT_RDWR);
-                        close(buf3.data);
+                        shutdown(clients[buf3.data].client_socket_fd, SHUT_RDWR);
+                        close(clients[buf3.data].client_socket_fd);
                         std::cout << "SERVER: " << return_current_time_and_date() << " Client " << buf3.data
                                   << " disconnected." << "\n";
                         clients.erase(buf.source_id);
