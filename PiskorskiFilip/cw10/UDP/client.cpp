@@ -11,7 +11,7 @@
 #include <sys/epoll.h>
 
 int socket_fd;
-int client_id;
+int client_id = -1;
 std::string name;
 bool local_or_inet;
 int server_port;
@@ -23,7 +23,6 @@ void send_stop_to_server() {
     buf.type = MSG_STOP;
     buf.data = client_id;
     send(socket_fd, (char*)&buf, sizeof(buf), 0);
-    shutdown(socket_fd, SHUT_RDWR);
     close(socket_fd);
 }
 
@@ -44,7 +43,10 @@ void send_init_to_server(){
 
 void receive_init_from_server(){
     struct my_msgbuf_init_to_client buf;
-    while(recv(socket_fd, (char*)&buf, 20000, 0)==-1);
+    if(recv(socket_fd, (char*)&buf, sizeof(my_msgbuf_init_to_client), 0) == -1){
+        std::cout << "CLIENT: ERROR recv func failed while trying to receive init.\n";
+        std::cout << "CLIENT: Reason: " << strerror(errno);
+    }
     if(buf.type != MSG_INIT){
         std::cout << "CLIENT: Wrong mssg type: " << buf.type << "\n";
         std::cout << "CLIENT: Expected: " << MSG_INIT << "\n";
@@ -108,7 +110,7 @@ void read_queue() {
     unsigned int* type = new unsigned int;
     timespec* timeout = new timespec;
     timeout->tv_sec = 0;
-    while(recv(socket_fd, (char*)&buf, sizeof(my_msgbuf_2one_to_server), MSG_DONTWAIT) > 0) {
+    while(recv(socket_fd, (char*)&buf, 20000, MSG_DONTWAIT) > 0) {
         *type = buf.type;
         switch (*type) {
             case MSG_2ONE: {
@@ -176,7 +178,7 @@ int main(int argc, char* argv[]){
     std::cout << "CLIENT: " << "Client started, PID:" << getpid() << "\n";
 
     if(!local_or_inet){
-        if((socket_fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1){
+        if((socket_fd = socket(AF_UNIX, SOCK_DGRAM, 0)) == -1){
             std::cout << "CLIENT: Error while creating socket\n";
             std::cout << "CLIENT: Reason: " << strerror(errno) << "\n";
             exit(0);
@@ -184,13 +186,18 @@ int main(int argc, char* argv[]){
         sockaddr_un serv_address;
         serv_address.sun_family = AF_UNIX;
         strcpy(serv_address.sun_path, path.c_str());
+        sockaddr_un my_address;
+        my_address.sun_family = AF_UNIX;
+        srand(time(NULL));
+        strcpy(my_address.sun_path, (std::string("/tmp/client") + std::to_string(rand())).c_str());
+        bind(socket_fd, reinterpret_cast<const sockaddr *>(&my_address), sizeof(sockaddr_un));
         if(connect(socket_fd, (sockaddr*)&serv_address, sizeof(serv_address)) == -1){
             std::cout << "CLIENT: Error while connecting to the server\n";
             std::cout << "CLIENT: Reason: " << strerror(errno) << "\n";
             exit(0);
         }
     } else {
-        if((socket_fd = socket(AF_INET, SOCK_STREAM, 0))==-1){
+        if((socket_fd = socket(AF_INET, SOCK_DGRAM, 0))==-1){
             std::cout << "CLIENT: Error while creating socket\n";
             std::cout << "CLIENT: Reason: " << strerror(errno) << "\n";
             exit(0);

@@ -20,6 +20,9 @@
 struct client {
     int id;
     int client_socket_fd;
+    sockaddr address;
+    uint64_t space[15];
+    socklen_t address_size;
 };
 std::map<int, client> clients;
 int port;
@@ -53,12 +56,9 @@ void sigint_handler(int sig){
     std::cout << "SERVER: " << return_current_time_and_date() << " SIGINT signal received! Exiting...\n";
     for(long unsigned int i=0; i<clients.size(); i++){
         struct my_msgbuf_stop_to_client buf{MSG_STOP};
-        send(clients[i].client_socket_fd, (char *)(&buf), sizeof(buf), 0);
-        shutdown(clients[i].client_socket_fd, SHUT_RDWR);
+        sendto(clients[i].client_socket_fd, (char *)(&buf), sizeof(buf), 0, &clients[i].address, clients[i].address_size);
         close(clients[i].client_socket_fd);
     }
-    shutdown(local_socket_fd, SHUT_RDWR);
-    shutdown(inet4_socket_fd, SHUT_RDWR);
     close(local_socket_fd);
     close(inet4_socket_fd);
     unlink(UNIX_socket_path.c_str());
@@ -80,43 +80,36 @@ void listening_thread_function(){
         }
         for(int i = 0; i<nfds; ++i) {
             if(events[i].data.fd == local_socket_fd || events[i].data.fd == inet4_socket_fd){
-                std::cout << "SERVER: " << return_current_time_and_date() << " New connection on socket " << events[i].data.fd << "\n";
-                int client_socket_fd = accept(events[i].data.fd, nullptr, nullptr);
-                recv(client_socket_fd, (char *)(&buf), sizeof(buf), 0);
-                if(client_socket_fd == -1){
-                    std::cout << "SERVER: " << return_current_time_and_date() << " Error while accepting new connection\n";
-                    std::cout << "SERVER: Reason: " << strerror(errno) << "\n";
-                    exit(1);
-                }
-                std::cout << "SERVER: " << return_current_time_and_date() << " Client accepted. Client socket: " << client_socket_fd << "\n";
-                int client_id;
-                std::vector<int> keys = get_keys(clients);
-                if (keys.size() == 0)
-                    client_id = 0;
-                else
-                    client_id = (*std::max_element(keys.begin(), keys.end())) + 1;
-                struct client new_client{client_id, client_socket_fd};
-                clients.insert(std::pair<int, client>(client_id, new_client));
-                std::cout << "SERVER: " << return_current_time_and_date() << " Client added to clients map\n";
-                struct my_msgbuf_init_to_client* buf3 = new my_msgbuf_init_to_client{MSG_INIT, client_id};
-                send(client_socket_fd, (char *)(buf3), sizeof(buf3), 0);
-                std::cout << "SERVER: " << return_current_time_and_date() << " MSG_INIT sent to client\n";
-                event.events = EPOLLIN;
-                event.data.fd = client_socket_fd;
-                if(epoll_ctl(epollfd, EPOLL_CTL_ADD, client_socket_fd, &event) == -1){
-                    std::cout << "SERVER: " << return_current_time_and_date() << " Error while adding client socket to epoll\n";
-                    exit(1);
-                }
-                std::cout << "SERVER: " << return_current_time_and_date() << " Client socket added to epoll\n";
-            }
-            else{
-                recv(events[i].data.fd, (char *)(&buf), sizeof(buf), 0);
+
+                //std::cout << "SERVER: " << return_current_time_and_date() << " New message on socket " << events[i].data.fd << "\n";
+                sockaddr_un src_addr;
+                socklen_t size_src_addr = events[i].data.fd == local_socket_fd ? sizeof(sockaddr_un) : sizeof(sockaddr_in);
+
+                recvfrom(events[i].data.fd, (char *)(&buf), sizeof(buf), 0, (sockaddr*)&src_addr,&size_src_addr);
                 unsigned int type = buf.type;
                 switch(type) {
+                    case MSG_INIT: {
+                        //struct my_msgbuf_init_to_server buf2 = *((my_msgbuf_init_to_server*)&buf);
+                        std::cout << "SERVER: " << return_current_time_and_date() << " MSG_INIT received. Socket fd: " << events[i].data.fd << ". Source address size: " << size_src_addr << "\n";
+
+                        int client_id;
+                        std::vector<int> keys = get_keys(clients);
+                        if (keys.empty())
+                            client_id = 0;
+                        else
+                            client_id = (*std::max_element(keys.begin(), keys.end())) + 1;
+                        struct client new_client{client_id, events[i].data.fd};
+                        memcpy(&new_client.address, &src_addr, size_src_addr);
+                        new_client.address_size = size_src_addr;
+                        clients.insert(std::pair<int, client>(client_id, new_client));
+                        std::cout << "SERVER: " << return_current_time_and_date() << " Client added to clients map. Client id: " << client_id << "\n";
+                        struct my_msgbuf_init_to_client buf3{MSG_INIT, client_id};
+                        sendto(events[i].data.fd, (char *)(&buf3), sizeof(buf3), 0, (sockaddr*)&src_addr, size_src_addr);
+                        std::cout << "SERVER: " << return_current_time_and_date() << " MSG_INIT sent to client\n";
+                        break;
+                    }
                     case MSG_STOP: {
                         my_msgbuf_stop_to_server buf3 = *((my_msgbuf_stop_to_server*) &buf);
-                        shutdown(clients[buf3.data].client_socket_fd, SHUT_RDWR);
-                        close(clients[buf3.data].client_socket_fd);
                         std::cout << "SERVER: " << return_current_time_and_date() << " Client " << buf3.data
                                   << " disconnected." << "\n";
                         clients.erase(buf.source_id);
@@ -129,7 +122,7 @@ void listening_thread_function(){
                         std::vector<int> keys = get_keys(clients);
                         struct my_msgbuf_list_to_client buf2{MSG_LIST, (int)keys.size()};
                         memcpy(buf2.data, keys.data(), keys.size() * sizeof(int));
-                        send(clients[buf4.data].client_socket_fd, (char *)&buf2, sizeof(buf2), 0);
+                        sendto(clients[buf4.data].client_socket_fd, (char *)&buf2, sizeof(buf2), 0, &clients[buf4.data].address, clients[buf4.data].address_size);
                         break;
                     }
                     case MSG_2ALL: {
@@ -139,7 +132,7 @@ void listening_thread_function(){
                         for (long unsigned int i = 0; i < clients.size(); i++) {
                             struct my_msgbuf_2all_to_client buf2{MSG_2ALL, buf5.source_id, buf5.size};
                             strcpy(buf2.message, buf5.message);
-                            send(clients[i].client_socket_fd, (char *)&buf2, sizeof(buf2), 0);
+                            sendto(clients[i].client_socket_fd, (char *)&buf2, sizeof(buf2), 0, &clients[i].address, clients[i].address_size);
                         }
                         break;
                     }
@@ -149,7 +142,7 @@ void listening_thread_function(){
                                   << " to client " << buf2.destination_id << ": " << buf2.message << "\n";
                         struct my_msgbuf_2one_to_client buf3{MSG_2ONE, buf2.source_id, buf2.size};
                         strcpy(buf3.message, buf2.message);
-                        send(clients[buf2.destination_id].client_socket_fd, (char *)&buf3, sizeof(buf3), 0);
+                        sendto(clients[buf2.destination_id].client_socket_fd, (char *)&buf3, sizeof(buf3), 0, &clients[buf2.destination_id].address, clients[buf2.destination_id].address_size);
                         break;
                     }
                     default:{
@@ -176,7 +169,7 @@ int main(int argc, char* argv[]){
 
     std::cout << "SERVER: " << return_current_time_and_date() << "Server started, PID:" << getpid() << "\n";
 
-    local_socket_fd = socket(AF_UNIX, SOCK_STREAM, 0);
+    local_socket_fd = socket(AF_UNIX, SOCK_DGRAM, 0);
     if(local_socket_fd == -1){
         std::cout << "SERVER: " << return_current_time_and_date() << " ERROR Failed to create a local socket!" << "\n";
         std::cout << "SERVER: " << return_current_time_and_date() << " ERROR Reason: " << strerror(errno) << "\n";
@@ -185,7 +178,7 @@ int main(int argc, char* argv[]){
     }
     std::cout << "SERVER: " << return_current_time_and_date() << " Local socket created successfully. Socket id: " << local_socket_fd << "\n";
 
-    inet4_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+    inet4_socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if(inet4_socket_fd == -1){
         std::cout << "SERVER: " << return_current_time_and_date() << " ERROR Failed to create an IPv4 socket!" << "\n";
         std::cout << "SERVER: " << return_current_time_and_date() << " ERROR Reason: " << strerror(errno) << "\n";
@@ -218,18 +211,6 @@ int main(int argc, char* argv[]){
     }
     std::cout << "SERVER: " << return_current_time_and_date() << " IPv4 socket bound successfully.\n";
 
-    if(listen(local_socket_fd, 10) == -1){
-        std::cout << "SERVER: " << return_current_time_and_date() << " ERROR Failed to listen on a local socket!" << "\n";
-        std::cout << "SERVER: " << return_current_time_and_date() << " ERROR Reason: " << strerror(errno) << "\n";
-        std::cout << "SERVER: " << return_current_time_and_date() << " ERROR Exiting..." << "\n";
-        exit(0);
-    }
-    if(listen(inet4_socket_fd, 10) == -1){
-        std::cout << "SERVER: " << return_current_time_and_date() << " ERROR Failed to listen on a local socket!" << "\n";
-        std::cout << "SERVER: " << return_current_time_and_date() << " ERROR Reason: " << strerror(errno) << "\n";
-        std::cout << "SERVER: " << return_current_time_and_date() << " ERROR Exiting..." << "\n";
-        exit(0);
-    }
     epollfd = epoll_create1(0);
     if(epollfd == -1){
         std::cout << "SERVER: " << return_current_time_and_date() << " Error while creating epoll\n";
